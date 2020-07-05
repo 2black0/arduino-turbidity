@@ -1,1 +1,1 @@
-copy all libraries in this folder to .../Arduino/Libraries/
+copy all libraries in this folder to .../arduino/libraries/
