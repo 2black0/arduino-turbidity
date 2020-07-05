@@ -11,6 +11,7 @@ bool debugLCD = 1;
 
 const int analogInPin = A0;
 float sensorValue = 0;
+float volt;
 int i = 0;
 int status = 0;
 
@@ -89,7 +90,7 @@ void setup()
   if (!connection_state)
     Awaits();
 
-  timer.setInterval(300000, send_http);
+  timer.setInterval(30000, send_http);
 }
 
 void loop()
@@ -98,16 +99,22 @@ void loop()
   read_analog();
   serial_show("T:" + String(sensorValue) + "NTU", 1);
   lcd_show(1, "S:Running", 0, 0, "T:" + String(sensorValue) + "NTU", 0, 1, 1000);
-  if (sensorValue > 100 && sensorValue <= 400 && status == 0)
-  {
-    send_email(status);
-    status = 1;
-  }
-  if (sensorValue <= 100 && status != 0)
+
+  /*if (sensorValue > 200 && status != 0)
   {
     send_email(status);
     status = 0;
   }
+  if (sensorValue > 100 && sensorValue <= 200 && status == 0)
+  {
+    send_email(status);
+    status = 1;
+  }*/
+
+  //read_analog();
+  //serial_show("T:" + String(sensorValue) + "NTU", 1);
+  //lcd_show(1, "S:Running", 0, 0, "T:" + String(sensorValue) + "NTU", 0, 1, 1000);
+  //lcd_show(1, "V:" + String(volt) + "V", 0, 0, "T:" + String(sensorValue) + "NTU", 0, 1, 1000);*/
 }
 
 void lcd_show(int clear, String text1, int x1, int y1, String text2, int x2, int y2, int waitms)
@@ -145,23 +152,32 @@ void serial_show(String text, int newline)
 void read_analog()
 {
   float totalValue = 0.0;
-  float volt;
-  sensorValue = 0;
+  volt = 0.0;
+  sensorValue = 0.0;
+  totalValue = 0.0;
   for (int i = 0; i < 500; i++)
   {
-    //volt += ((float)analogRead(analogInPin) / 1024) * 3.295 - 0.05;
-    sensorValue = analogRead(analogInPin);
+    sensorValue = analogRead(analogInPin) / 162.0734;
     totalValue += sensorValue;
   }
 
-  //volt = volt / 500;
-  //sensorValue = volt * 1.51515;
-  sensorValue = totalValue / 500;
+  volt = totalValue / 500;
+  if (volt <= 3.15)
+  {
+    volt = 3.15;
+  }
+  if (volt >= 3.48)
+  {
+    volt = 3.48;
+  }
+  sensorValue = 3.48 - volt;
+  sensorValue = (sensorValue / 0.33 * 995) + 5;
+  //sensorValue = volt;
 }
 
 void send_http()
 {
-  String url = "http://postman-echo.com/get?foo1="; //"http://192.168.1.10/post?x="; // "http://postman-echo.com/get?foo1=bar1&foo2=bar2"
+  String url = "http://192.168.1.4/turbidity/save.php?x="; // "http://postman-echo.com/get?foo1=" //http://192.168.1.4/turbidity/save.php?x=555
   String x;
 
   x = String(sensorValue);
