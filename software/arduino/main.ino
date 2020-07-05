@@ -13,10 +13,11 @@ const int analogInPin = A0;
 float sensorValue = 0;
 float volt;
 int i = 0;
-int status = 0;
+int clean_status = 0;
 
 const char *ssid = "Wifi-Roboto";
 const char *password = "arDY1234";
+String url = "http://192.168.1.4/turbidity/save.php?x=";
 
 uint8_t connection_state = 0;
 uint16_t reconnect_interval = 10000;
@@ -90,7 +91,7 @@ void setup()
   if (!connection_state)
     Awaits();
 
-  timer.setInterval(30000, send_http);
+  timer.setInterval(600000, send_http); // 30000ms = 30s; 10min = 600s = 600000ms
 }
 
 void loop()
@@ -100,16 +101,20 @@ void loop()
   serial_show("T:" + String(sensorValue) + "NTU", 1);
   lcd_show(1, "S:Running", 0, 0, "T:" + String(sensorValue) + "NTU", 0, 1, 1000);
 
-  /*if (sensorValue > 200 && status != 0)
+  if (sensorValue <= 20 && (clean_status == 1 || clean_status == 2)) // air bersih
   {
-    send_email(status);
-    status = 0;
+    clean_status = 0;
   }
-  if (sensorValue > 100 && sensorValue <= 200 && status == 0)
+  if (sensorValue > 20 && sensorValue <= 25 && clean_status == 0) // air cukup keruh
   {
-    send_email(status);
-    status = 1;
-  }*/
+    send_email("cukup keruh");
+    clean_status = 1;
+  }
+  if (sensorValue > 25 && (clean_status == 0 || clean_status == 1)) // air sangat keruh
+  {
+    send_email("sangat keruh");
+    clean_status = 2;
+  }
 
   //read_analog();
   //serial_show("T:" + String(sensorValue) + "NTU", 1);
@@ -177,7 +182,6 @@ void read_analog()
 
 void send_http()
 {
-  String url = "http://192.168.1.4/turbidity/save.php?x="; // "http://postman-echo.com/get?foo1=" //http://192.168.1.4/turbidity/save.php?x=555
   String x;
 
   x = String(sensorValue);
@@ -206,7 +210,7 @@ void send_http()
 void send_email(int status)
 {
   EMailSender::EMailMessage message;
-  if (status == 0)
+  if (status == "cukup keruh")
   {
     message.subject = "[Notifikasi] Air Aquarium Cukup Keruh";
     message.message = "Air dalam aquarium cukup keruh, silahkan tambahkan disinfektan air agar kualitas air membaik";
