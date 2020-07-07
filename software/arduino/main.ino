@@ -23,8 +23,7 @@ uint8_t connection_state = 0;
 uint16_t reconnect_interval = 10000;
 
 LiquidCrystal_I2C lcd(0x27, 16, 2);
-EMailSender emailSend("robot.terbang01@gmail.com", "R52o@L@kAm3X");
-//EMailSender emailSend("ianputrapratama809@gmail.com", "kenponx1976");
+EMailSender emailSend("ianputrapratama809@gmail.com", "kenponx1976");
 
 SimpleTimer timer;
 
