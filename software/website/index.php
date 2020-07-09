@@ -71,14 +71,14 @@
               $status = "";
               $datalabels = [];
               $valuelabels = [];
-              while ($baris = mysqli_fetch_row($hasil)) 
-                { 
+              while ($baris = mysqli_fetch_row($hasil))
+                {
                   array_push($datalabels, $baris[1]);
                   array_push($valuelabels, $baris[2]);
 
                   $id         += 1;
                   $id_data    = $baris[0];
-                  $waktu      = $baris[1];  
+                  $waktu      = $baris[1];
                   $turbidity  = $baris[2];
                   if ($turbidity<100) {
                     $status = "Bersih";
@@ -117,7 +117,7 @@
     var ctx = document.getElementById("myChart").getContext('2d');
 
     var datalabels = [
-      <?php 
+      <?php
         $sql = "SELECT * FROM logsensor";
         $hasil = mysqli_query($dbc, $sql);
         $lastrow = mysqli_num_rows($hasil);
@@ -127,7 +127,7 @@
         $hasil = mysqli_query($dbc, $sql);
         $x = 0;
         while ($baris = mysqli_fetch_row($hasil))
-        { 
+        {
           $x += 1;
           //echo "\"";
           echo "\"$baris[1]\"";
@@ -139,7 +139,7 @@
     ];
 
     var valuelabels = [
-      <?php 
+      <?php
         $sql = "SELECT * FROM logsensor";
         $hasil = mysqli_query($dbc, $sql);
         $lastrow = mysqli_num_rows($hasil);

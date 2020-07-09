@@ -6,12 +6,14 @@
 #include <ESP8266HTTPClient.h>
 #include <SimpleTimer.h>
 
+#define timersend 60000
+
 bool debugSerial = 1;
 bool debugLCD = 1;
 
 const int analogInPin = A0;
 float sensorValue = 0;
-float volt;
+
 int i = 0;
 int clean_status = 0;
 
@@ -90,7 +92,7 @@ void setup()
   if (!connection_state)
     Awaits();
 
-  timer.setInterval(600000, send_http); // 30000ms = 30s; 10min = 600s = 600000ms
+  timer.setInterval(timersend, send_http);
 }
 
 void loop()
@@ -106,19 +108,24 @@ void loop()
   }
   if (sensorValue > 20 && sensorValue <= 25 && clean_status == 0) // air cukup keruh
   {
-    send_email("cukup keruh");
+    send_http();
+    send_email(1);
     clean_status = 1;
   }
   if (sensorValue > 25 && (clean_status == 0 || clean_status == 1)) // air sangat keruh
   {
-    send_email("sangat keruh");
+    send_http();
+    send_email(2);
     clean_status = 2;
   }
-
-  //read_analog();
+  /*
+  read_analog();
   //serial_show("T:" + String(sensorValue) + "NTU", 1);
-  //lcd_show(1, "S:Running", 0, 0, "T:" + String(sensorValue) + "NTU", 0, 1, 1000);
-  //lcd_show(1, "V:" + String(volt) + "V", 0, 0, "T:" + String(sensorValue) + "NTU", 0, 1, 1000);*/
+  //lcd_show(1, String(sensorValue), 0, 0, " ", 0, 1, 1);
+  //lcd_show(0, " ", 0, 0, String(sensorValue), 0, 1, 1);
+  lcd_show(1, "S:Running", 0, 0, "T:" + String(sensorValue) + "NTU", 0, 1, 1000);
+  //lcd_show(1, "A:" + String(sensorValue) + "V", 0, 0, "T:" + String(sensorValue) + "NTU", 0, 1, 1);
+  delay(5000);*/
 }
 
 void lcd_show(int clear, String text1, int x1, int y1, String text2, int x2, int y2, int waitms)
@@ -155,28 +162,31 @@ void serial_show(String text, int newline)
 
 void read_analog()
 {
-  float totalValue = 0.0;
-  volt = 0.0;
-  sensorValue = 0.0;
-  totalValue = 0.0;
-  for (int i = 0; i < 500; i++)
+  float totalValue = 0;
+  float value;
+  sensorValue = 0;
+
+  for (int i = 0; i < 2500; i++)
   {
-    sensorValue = analogRead(analogInPin) / 162.0734;
-    totalValue += sensorValue;
+    value = analogRead(analogInPin);
+    totalValue += value;
+    value = 0;
   }
 
-  volt = totalValue / 500;
-  if (volt <= 3.15)
+  sensorValue = totalValue / 2500;
+  sensorValue = 500 - ((sensorValue - 250) * 1.596774);
+  if (sensorValue <= 5)
   {
-    volt = 3.15;
+    sensorValue = 5;
   }
-  if (volt >= 3.48)
+  else if (sensorValue >= 500)
   {
-    volt = 3.48;
+    sensorValue = 500;
   }
-  sensorValue = 3.48 - volt;
-  sensorValue = (sensorValue / 0.33 * 995) + 5;
-  //sensorValue = volt;
+  else
+  {
+    sensorValue = sensorValue;
+  }
 }
 
 void send_http()
@@ -209,7 +219,7 @@ void send_http()
 void send_email(int status)
 {
   EMailSender::EMailMessage message;
-  if (status == "cukup keruh")
+  if (status == 1)
   {
     message.subject = "[Notifikasi] Air Aquarium Cukup Keruh";
     message.message = "Air dalam aquarium cukup keruh, silahkan tambahkan disinfektan air agar kualitas air membaik";
