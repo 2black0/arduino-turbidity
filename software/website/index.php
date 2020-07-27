@@ -76,9 +76,15 @@
                   array_push($datalabels, $baris[1]);
                   array_push($valuelabels, $baris[2]);
 
+                  $phpdate = strtotime( $baris[1] );
+                  
+                  $date = new DateTime("@$phpdate");
+                  $timezone = new DateTimeZone('Asia/Jakarta');
+                  $date->setTimeZone($timezone);
+
                   $id         += 1;
                   $id_data    = $baris[0];
-                  $waktu      = $baris[1];
+                  $waktu      = $$date->format('Y-m-d H:i:s');
                   $turbidity  = $baris[2];
                   if ($turbidity<100) {
                     $status = "Bersih";
