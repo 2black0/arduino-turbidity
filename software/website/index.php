@@ -84,7 +84,7 @@
 
                   $id         += 1;
                   $id_data    = $baris[0];
-                  $waktu      = $$date->format('Y-m-d H:i:s');
+                  $waktu      = $date->format('Y-m-d H:i:s');
                   $turbidity  = $baris[2];
                   if ($turbidity<100) {
                     $status = "Bersih";
