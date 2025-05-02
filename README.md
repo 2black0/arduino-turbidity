@@ -1,79 +1,130 @@
-# 🌊 Arduino Turbidity Monitoring System
+# 💧 Arduino Turbidity Monitoring System
 
-This repository contains a complete turbidity monitoring system based on **Arduino**. It includes hardware schematics, embedded firmware, and a web-based dashboard to monitor and log water turbidity in real-time. The system can also be configured to send email alerts and visualize data using charts.
+An end-to-end **turbidity monitoring project** using Arduino and ESP8266 (Wemos D1 Mini), designed to read water turbidity, display the data, and log it to a web-based dashboard. It supports email notifications using Gmail and has modular firmware and server-side PHP integration.
+
+---
 
 ## 📦 Project Structure
 
 ```
 
 .
-├── hardware/                 # Fritzing schematic & hardware notes
-│   ├── draw\_bb.png           # Breadboard layout (image)
-│   ├── draw\.fzz              # Fritzing project file
-│   └── hardware.txt          # Notes or instructions
+├── hardware/                 # Circuit design & breadboard layout
+│   ├── draw\_bb.png           # Breadboard image
+│   ├── draw\.fzz              # Fritzing schematic
+│   └── hardware.txt          # Notes on hardware
 ├── software/
-│   ├── arduino/              # Arduino sketch, libraries, and documentation
-│   │   ├── main.ino
-│   │   ├── data.xlsx         # Sample data
-│   │   ├── libraries/        # Local libraries used by the project
-│   │   ├── Tutorial Arduino Turbidity.pdf / .docx
-│   │   └── readme.md         # Arduino-specific README
-│   └── website/              # PHP & HTML files for online data monitoring
-│       ├── index.php         # Web dashboard
-│       ├── save.php          # Data saving handler
-│       ├── about.php         # About page
-│       ├── dbconnect.php     # MySQL DB connection
-│       └── css/, js/, img/   # Frontend assets (Bootstrap, Chart.js, etc.)
+│   ├── arduino/              # Arduino code and libraries
+│   │   ├── main.ino          # Main Arduino sketch
+│   │   ├── data.xlsx         # Sample turbidity data
+│   │   ├── libraries/        # Local Arduino libraries
+│   └── website/              # PHP, HTML, JS for monitoring dashboard
+│       ├── index.php         # Web interface
+│       ├── save.php          # Data logging script
+│       ├── dbconnect.php     # Database connection
+│       ├── css/, js/, img/   # UI assets
+│       └── create-table.txt  # SQL schema for MySQL
 ├── LICENSE
-└── README.md                 # This file
+└── README.md
 
 ```
 
+---
+
 ## 🚀 Features
 
-- Real-time turbidity sensing with Arduino
-- LCD display for live readings
-- Data logging to web dashboard via PHP + MySQL
-- Visualizations using Chart.js
-- Email alert integration (Gmail-compatible via `EMailSender` library)
-- Clean breadboard circuit using Fritzing
+- Real-time turbidity reading using analog sensor
+- Display data on LCD (via I2C)
+- Web dashboard for data logging & visualization
+- PHP & MySQL backend
+- Email alert support via Gmail
+- Built-in chart visualization (Chart.js)
+- Compatible with Wemos D1 Mini (ESP8266)
 
-## 🛠️ Hardware Requirements
+---
 
-- Arduino Uno or ESP32
-- Turbidity sensor (e.g., SEN0189)
-- I2C LCD 16x2 display
-- SIM800L module (optional, for GSM email alert)
-- Internet module (e.g., ESP8266/ESP32 for web dashboard)
-- USB cable, resistors, jumper wires, breadboard
+## 🧰 Getting Started
 
-## 🧠 Software & Libraries
+### 1. Install Prerequisites
 
-Arduino:
+- [Arduino IDE](https://www.arduino.cc/en/main/software)
+
+### 2. Setup Libraries
+
+Copy the following libraries to your local Arduino folder (usually: `Documents/Arduino/libraries/`):
+
+- `EMailSender`
 - `LiquidCrystal_I2C`
 - `SimpleTimer`
-- `EMailSender`
 
-Web:
-- PHP (7.x)
-- MySQL/MariaDB
-- Bootstrap 4
-- Chart.js
-- jQuery
+You can also find them inside `software/arduino/libraries/`.
 
-## 🌐 Web Dashboard
+### 3. Install ESP8266 Board Support
 
-Navigate to `/website/index.php` to view real-time turbidity data, visualized with charts. The database schema can be initialized with `create-table.txt`.
+- Open **Arduino IDE**
+- Go to `File → Preferences`
+- In the **Additional Board Manager URLs**, add:
+```
 
-## 📖 Documentation
+https://arduino.esp8266.com/stable/package_esp8266com_index.json
 
-- `Tutorial Arduino Turbidity.pdf`: Full user manual and setup guide
-- `hardware/draw_bb.png`: Circuit wiring reference
+```
+- Click **OK**
+- Then go to `Tools → Board → Board Manager`
+- Search for **esp8266** and click **Install**
 
-## 🔒 License
+### 4. Upload Code to Wemos D1 Mini
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more information.
+- Select board: `LOLIN(WEMOS) D1 R2 & Mini`
+- Open `main.ino` from `software/arduino/`
+- Connect Wemos via USB
+- Click **Upload**
 
-## 🤝 Contributions
+---
 
-Contributions are welcome! Feel free to fork, submit pull requests, or suggest features via issues.
+## 🌐 Web Dashboard Setup
+
+### 1. Prepare MySQL Database
+
+- Create a database (e.g., `turbidity_db`)
+- Run the SQL schema found in `website/create-table.txt`
+
+### 2. Configure PHP
+
+- Copy contents of `software/website/` to your web server
+- Adjust `dbconnect.php` to match your MySQL credentials
+
+### 3. Access Dashboard
+
+Open `index.php` in your browser to view turbidity logs, charts, and real-time status.
+
+---
+
+## 📧 Email Notifications
+
+Email alerts are sent when turbidity crosses a certain threshold.
+
+- Uses `EMailSender` library (Gmail-compatible)
+- Make sure to enable **Less secure app access** in your Gmail settings
+- Modify credentials in `EMailSenderKey.h` before use
+
+---
+
+## 🖼️ Hardware Setup
+
+Refer to:
+- `hardware/draw_bb.png` for wiring layout
+- `hardware/draw.fzz` for Fritzing schematic
+
+---
+
+## 📜 License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for full terms.
+
+---
+
+## 🙌 Credits
+
+**Author:** Ardy Seto  
+Feel free to fork, modify, and contribute improvements or additional features.
