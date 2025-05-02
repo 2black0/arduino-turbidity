@@ -65,9 +65,7 @@ You can also find them inside `software/arduino/libraries/`.
 - Go to `File → Preferences`
 - In the **Additional Board Manager URLs**, add:
 ```
-
 https://arduino.esp8266.com/stable/package_esp8266com_index.json
-
 ```
 - Click **OK**
 - Then go to `Tools → Board → Board Manager`
